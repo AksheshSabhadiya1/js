@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task</title>
+    <style>
+        .main {
+            margin: 0;
+            padding: 0;
+            min-height: 500%;
+            max-width: 100%;
+        }
+
+        .table {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            padding: 0;
+            border: 0px solid black;
+        }
+
+        tr {
+            font-size: larger;
+            min-width: 80%;
+        }
+
+        td {
+            font-size: larger;
+            padding: 0.5rem;
+            min-width: 100%;
+        }
+
+        input {
+            padding: 0.5rem;
+            margin: 0.5rem;
+            min-width: 8rem;
+        }
+
+        #username,
+        #emailid,
+        #mobileNo {
+            min-width: 18rem;
+        }
+
+        .btn:hover,
+        #clear:hover,
+        #reset:hover {
+            background-color: rgb(69, 67, 67);
+        }
+
+        .btn {
+            padding: 0.6rem;
+            background-color: rgb(82, 73, 239);
+            color: white;
+            font-weight: 800;
+            border-radius: 8px;
+            border: 1px solid white;
+            max-width: 100%;
+            max-height: 100%;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        #clear {
+            background-color: red;
+        }
+
+        #reset {
+            background-color: orange;
+        }
+
+        #result {
+            margin-top: 2%;
+            min-width: 100%;
+            min-height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main">
+        <table class="table" border="1">
+
+            <form action="" onsubmit="return false" id="form" name="userDataForm" method="get">
+                <tr>
+                    <td>
+                        <label for="name"> Name: </label>
+                    </td>
+                    <td>
+                        <input type="text" name="username" id="username" placeholder="Enter Your Name">
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <label for="email"> Email Id: </label>
+                    </td>
+                    <td>
+                        <input type="email" name="emailid" id="emailid" placeholder="Enter Your Email">
+
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <label for="mobileNo"> Mobile No: </label>
+                    </td>
+                    <td>
+                        <input type="tel" name="mobile" id="mobileNo" placeholder="Enter Your Mobile no">
+                    </td>
+                </tr>
+
+                <tr>
+                    <td colspan="2" align="center">
+                        <input type="submit" onclick="storeData()" class="btn" value="Submit">
+                        <input type="button" onclick="getAllData()" class="btn" value="Show Data">
+                        <input type="reset" onclick="resetData()" class="btn" id="reset" value="Reset">
+                    </td>
+                </tr>
+            </form>
+        </table>
+    </div>
+
+    <div id="result"></div>
+
+    <script>
+
+        function validateData() {
+
+            if (users.uname === "" || users.email === "" || users.mobile === "") {
+                return false
+            } else {
+                return true
+            }
+        }
+
+
+        let users = {}
+
+        function storeData() {
+
+            users.uname = document.getElementById('username').value
+            users.email = document.getElementById('emailid').value
+            users.mobile = document.getElementById('mobileNo').value
+
+
+            if (validateData()) {
+
+                const oldArr = JSON.parse(localStorage.getItem('arr')) || []
+                oldArr.push(users)
+
+                localStorage.setItem('arr', JSON.stringify(oldArr))
+                resetData()
+                createTable()
+
+            } else {
+                alert("Enter all details")
+            }
+
+        }
+
+
+        function createTable() {
+
+            let [...args] = JSON.parse(localStorage.getItem('arr'))
+            
+            if (args.length >= 0 && validateData()) {
+
+                let tableFormat = '<table border=1> <tr> <th>Name</th> <th>Email ID</th> <th>Mobile No</th> </tr>'
+
+                for (let i in args) {
+                    tableFormat += `<tr> <td>${args[i].uname}</td> <td>${args[i].email}</td> <td>${args[i].mobile}</td>
+                                    <td><button class='btn' onclick="setData(${i})">Edit</button> <button class='btn' id='clear' onclick="removeData(${i})">Delete</button> </tr> `
+
+                }
+
+                tableFormat += '</table>'
+                document.getElementById('result').innerHTML = tableFormat
+            }
+            
+        }
+
+
+        function resetData() {
+            document.getElementById('username').value = '';
+            document.getElementById('emailid').value = '';
+            document.getElementById('mobileNo').value = '';
+        }
+
+
+        function removeData(key) {
+
+            let tableData = JSON.parse(localStorage.getItem('arr'))
+
+            tableData.splice(key, 1)
+
+            localStorage.setItem('arr', JSON.stringify(tableData))
+            createTable()
+
+        }
+
+
+        function setData(key) {
+            users.uname = prompt("Enter Your Name :")
+            users.email = prompt("Enter Your Email ID :")
+            users.mobile = prompt("Enter Your Mobile No :")
+            
+
+            if (validateData()) {
+
+                console.log(users.uname);
+                console.log(users.email);
+                console.log(users.mobile);
+
+                let [...details] = JSON.parse(localStorage.getItem('arr'))
+
+                details[key].uname = users.uname
+                details[key].email = users.email
+                details[key].mobile = users.mobile
+
+                localStorage.setItem('arr', JSON.stringify(details))
+                createTable()
+
+            } else {
+                alert("Enter all details")
+                setData(key)
+            }
+        }
+
+
+        function getAllData() {
+
+            if (validateData()) {
+                createTable()
+
+            } else {
+                alert("Data Not Avialable");
+            }
+        }
+
+    </script>
+</body>
+
+</html>
